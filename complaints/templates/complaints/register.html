@@ -1,0 +1,23 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-aside">
+    <p class="eyebrow">CITIZEN SERVICES / 01</p>
+    <h1>Make your neighborhood work better.</h1>
+    <p>Report waste issues, follow their progress, and see when a crew has completed the work.</p>
+    <div class="aside-rule"><span>01</span><span>Report. Track. Resolve.</span></div>
+  </div>
+  <div class="form-panel">
+    <p class="eyebrow">NEW CITIZEN ACCOUNT</p>
+    <h2>Get started</h2>
+    <p class="muted">Use your account to submit and track service complaints.</p>
+    <form method="post" class="stack-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="button button-primary" type="submit">Create account <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="form-foot">Already registered? <a href="{% url 'login' %}">Sign in</a></p>
+  </div>
+</section>
+{% endblock %}

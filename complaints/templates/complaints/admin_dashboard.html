@@ -1,0 +1,28 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Operations dashboard{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow">OPERATIONS / SERVICE DESK</p><h1>Complaint control room</h1><p class="muted">Triage incoming reports, coordinate crews, and verify completed work.</p></section>
+<section class="metrics" aria-label="Operations summary">
+  <article class="metric"><span class="metric-label">TOTAL REPORTS</span><strong>{{ total_count }}</strong></article>
+  <article class="metric metric-alert"><span class="metric-label">UNASSIGNED</span><strong>{{ unassigned_count }}</strong></article>
+  <article class="metric"><span class="metric-label">ACTIVE CREW JOBS</span><strong>{{ active_count }}</strong></article>
+  <article class="metric"><span class="metric-label">AWAITING VERIFICATION</span><strong>{{ resolved_count }}</strong></article>
+</section>
+<section class="section-block">
+  <div class="section-heading"><div><p class="eyebrow">CASE QUEUE</p><h2>All complaints</h2></div><a class="text-link" href="{% url 'admin:index' %}">Django admin <span aria-hidden="true">↗</span></a></div>
+  {% if complaints %}<div class="table-wrap"><table>
+    <thead><tr><th>Reference</th><th>Citizen</th><th>Issue</th><th>Priority</th><th>Crew</th><th>Status</th><th></th></tr></thead>
+    <tbody>{% for complaint in complaints %}<tr>
+      <td class="reference">{{ complaint.reference|slice:':8'|upper }}</td><td>{{ complaint.submitted_by.username }}</td><td>{{ complaint.get_category_display }}</td>
+      <td><span class="priority priority-{{ complaint.priority }}">{{ complaint.get_priority_display }}</span></td>
+      <td>{% if complaint.assigned_crew %}{{ complaint.assigned_crew.name }}{% else %}<span class="muted">Unassigned</span>{% endif %}</td>
+      <td><span class="status status-{{ complaint.status }}">{{ complaint.get_status_display }}</span></td>
+      <td><a class="text-link" href="{% url 'complaint_update' complaint.reference %}">Review <span aria-hidden="true">→</span></a></td>
+    </tr>{% endfor %}</tbody>
+  </table></div>{% else %}<div class="empty-state"><h3>No complaints in the queue.</h3><p>New citizen reports will appear here.</p></div>{% endif %}
+</section>
+<section class="section-block crew-section">
+  <div class="section-heading"><div><p class="eyebrow">FIELD CAPACITY</p><h2>Crew availability</h2></div><a class="text-link" href="{% url 'admin:complaints_crew_changelist' %}">Manage crews <span aria-hidden="true">↗</span></a></div>
+  {% if crews %}<div class="crew-list">{% for crew in crews %}<div class="crew-row"><span class="crew-indicator {% if crew.is_available %}available{% else %}busy{% endif %}"></span><strong>{{ crew.name }}</strong><span class="muted">{% if crew.leader %}Leader: {{ crew.leader.username }}{% else %}No leader assigned{% endif %}</span><span class="status {% if crew.is_available %}status-closed{% else %}status-in_progress{% endif %}">{% if crew.is_available %}Available{% else %}On assignment{% endif %}</span></div>{% endfor %}</div>{% else %}<p class="muted">No crews added. Create crews through Django admin before assigning complaints.</p>{% endif %}
+</section>
+{% endblock %}

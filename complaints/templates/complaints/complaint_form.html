@@ -1,0 +1,12 @@
+{% extends 'complaints/base.html' %}
+{% block title %}New report{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow">CITIZEN PORTAL / NEW REPORT</p><h1>Tell us what needs attention.</h1><p class="muted">A precise location and description help the right crew respond.</p></section>
+<section class="form-panel form-panel-wide">
+  <form method="post" class="stack-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions"><a class="text-link" href="{% url 'dashboard' %}">Cancel</a><button class="button button-primary" type="submit">Submit report <span aria-hidden="true">→</span></button></div>
+  </form>
+</section>
+{% endblock %}

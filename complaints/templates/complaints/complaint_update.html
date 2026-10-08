@@ -1,0 +1,12 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Review complaint{% endblock %}
+{% block content %}
+<p class="eyebrow"><a class="text-link" href="{% url 'admin_dashboard' %}">← Operations</a> / REVIEW {{ complaint.reference|slice:':8'|upper }}</p>
+<section class="page-heading"><h1>Review complaint</h1><p class="muted">{{ complaint.get_category_display }} at {{ complaint.location }}</p></section>
+<div class="review-grid">
+  <section class="section-block review-summary"><p class="eyebrow">CITIZEN REPORT</p><p class="detail-copy">{{ complaint.description|linebreaksbr }}</p><div class="detail-facts"><div><span class="metric-label">SUBMITTED BY</span><strong>{{ complaint.submitted_by.username }}</strong></div><div><span class="metric-label">SUBMITTED</span><strong>{{ complaint.submitted_at|date:'M j, Y, H:i' }}</strong></div></div>
+    {% if complaint.completion_proof %}<div class="proof-box"><span class="metric-label">COMPLETION PROOF</span><a class="text-link" href="{{ complaint.completion_proof.url }}" target="_blank" rel="noopener">Verify uploaded file <span aria-hidden="true">↗</span></a></div>{% endif %}
+  </section>
+  <section class="form-panel"><p class="eyebrow">ADMINISTRATOR REVIEW</p><h2>Update case</h2><form method="post" class="stack-form">{% csrf_token %}{{ form.as_p }}<button class="button button-primary" type="submit">Save review <span aria-hidden="true">→</span></button></form></section>
+</div>
+{% endblock %}

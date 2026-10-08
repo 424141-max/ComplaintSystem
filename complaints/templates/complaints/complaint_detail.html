@@ -1,0 +1,20 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Report {{ complaint.reference|slice:':8'|upper }}{% endblock %}
+{% block content %}
+<p class="eyebrow"><a class="text-link" href="{% if user.is_staff %}{% url 'admin_dashboard' %}{% else %}{% url 'dashboard' %}{% endif %}">← Back to reports</a> / COMPLAINT DETAIL</p>
+<section class="detail-heading"><div><p class="eyebrow">REPORT {{ complaint.reference|slice:':8'|upper }}</p><h1>{{ complaint.get_category_display }}</h1><p class="muted">Submitted {{ complaint.submitted_at|date:'M j, Y, H:i' }}</p></div><span class="status status-{{ complaint.status }}">{{ complaint.get_status_display }}</span></section>
+<div class="detail-grid">
+  <section class="detail-main section-block">
+    <p class="eyebrow">ISSUE DESCRIPTION</p><p class="detail-copy">{{ complaint.description|linebreaksbr }}</p>
+    <div class="detail-facts"><div><span class="metric-label">LOCATION</span><strong>{{ complaint.location }}</strong></div><div><span class="metric-label">PRIORITY</span><strong>{{ complaint.get_priority_display }}</strong></div><div><span class="metric-label">ASSIGNED CREW</span><strong>{% if complaint.assigned_crew %}{{ complaint.assigned_crew.name }}{% else %}Awaiting assignment{% endif %}</strong></div><div><span class="metric-label">REPORTED BY</span><strong>{{ complaint.submitted_by.username }}</strong></div></div>
+    {% if complaint.completion_proof %}<div class="proof-box"><span class="metric-label">CREW COMPLETION PROOF</span><a class="text-link" href="{{ complaint.completion_proof.url }}" target="_blank" rel="noopener">Open uploaded file <span aria-hidden="true">↗</span></a></div>{% endif %}
+  </section>
+  <aside class="detail-side section-block">
+    <p class="eyebrow">NEXT ACTION</p>
+    {% if user.is_staff %}<p>Review the submitted details, set the priority, and assign an available crew. Verify proof before closing.</p><a class="button button-outline button-full" href="{% url 'complaint_update' complaint.reference %}">Review complaint</a>
+    {% elif can_start_work %}<p>Confirm the crew has reached the location and started work.</p><form method="post" action="{% url 'start_work' complaint.reference %}">{% csrf_token %}<button class="button button-primary" type="submit">Start work <span aria-hidden="true">→</span></button></form>
+    {% elif can_upload_proof %}<p>Upload a completion photo or document after the crew resolves the issue.</p><form method="post" enctype="multipart/form-data" action="{% url 'upload_completion_proof' complaint.reference %}" class="stack-form">{% csrf_token %}<label for="completion-proof">Completion proof</label><input id="completion-proof" type="file" name="completion_proof" required><button class="button button-primary" type="submit">Submit proof</button></form>
+    {% else %}<p>Updates to this report will appear here as the service team reviews and resolves it.</p>{% endif %}
+  </aside>
+</div>
+{% endblock %}

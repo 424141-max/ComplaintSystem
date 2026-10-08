@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ClearCycle{% endblock %} | Waste Services</title>
+  <link rel="stylesheet" href="{% static 'complaints/site.css' %}">
+  <script src="{% static 'complaints/password-toggle.js' %}" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span>ClearCycle <small>WASTE SERVICES</small></span>
+    </a>
+    <nav aria-label="Main navigation">
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}">Operations</a>{% else %}<a href="{% url 'dashboard' %}">My reports</a>{% endif %}
+        <form class="nav-form" method="post" action="{% url 'logout' %}">
+          {% csrf_token %}<button class="nav-link" type="submit">Sign out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Sign in</a>
+        <a class="nav-cta" href="{% url 'register' %}">Create account</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="page-shell">
+    {% if messages %}
+      <div class="messages" aria-live="polite">
+        {% for message in messages %}<p class="message {{ message.tags }}">{{ message }}</p>{% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer"><span>ClearCycle Waste Services</span><span>Cleaner streets, accountable service.</span></footer>
+</body>
+</html>
